@@ -849,4 +849,17 @@ class ModuleLib
             return false;
         }
     }
+
+    /**
+     * Current user's favorites list
+     *
+     * @access public
+     *
+     * @return array
+     */
+    public function getFavorites() {
+        $favoritesBean = \BeanFactory::getBean('Favorites');
+        return $favoritesBean->getCurrentUserSidebarFavorites();
+    }
+
 }
