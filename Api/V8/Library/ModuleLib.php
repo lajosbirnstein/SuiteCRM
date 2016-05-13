@@ -310,24 +310,6 @@ class ModuleLib
     }
 
     /**
-     * @param $userId
-     * @param $module
-     *
-     * @return array
-     */
-    public function getLastViewed($userId, $module)
-    {
-        $tracker = new \Tracker();
-        $entryList = $tracker->get_recently_viewed($userId, $module);
-        $module_results = array();
-        foreach ($entryList as $entry) {
-            $module_results[] = $entry;
-        }
-
-        return $module_results;
-    }
-
-    /**
      * @param $module
      * @param $type
      *
@@ -385,6 +367,24 @@ class ModuleLib
             'module_fields' => $result['module_fields'],
             'link_fields' => $result['link_fields'],
         );
+    }
+
+    /**
+     * @param $userId
+     * @param $module
+     *
+     * @return array
+     */
+    public function getLastViewed($userId, $module)
+    {
+        $tracker = new \Tracker();
+        $entryList = $tracker->get_recently_viewed($userId, $module);
+        $module_results = array();
+        foreach ($entryList as $entry) {
+            $module_results[] = $entry;
+        }
+
+        return $module_results;
     }
 
     /**

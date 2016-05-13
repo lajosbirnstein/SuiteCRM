@@ -574,4 +574,37 @@ class ModuleController extends Api
 
         return $result;
     }
+
+    /**
+     * Get current user's last viewed URLs
+     *
+     * @access public
+     *
+     * @param Request  $req
+     * @param Response $res
+     * @param array $args
+     *
+     * @return Response
+     */
+    public function getRecordsViewed(Request $req, Response $res, $args)
+    {
+        global $container;
+
+        $result = null;
+        $lib = new ModuleLib();
+
+        if ($container['jwt'] !== null && $container['jwt']->userId !== null) {
+            $user = \BeanFactory::getBean('Users', $container['jwt']->userId);
+            if ($user === false) {
+                $result = $this->generateResponse($res, 401, 'No user id', 'Failure');
+            } else {
+                $result = $this->generateResponse($res, 200, $lib->getLastViewed($container['jwt']->userId, ''), 'Success');
+            }
+        } else {
+            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
+            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
+        }
+
+        return $result;
+    }
 }
