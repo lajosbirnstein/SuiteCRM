@@ -855,11 +855,13 @@ class ModuleLib
      *
      * @access public
      *
+     * @param string $module
+     *
      * @return array
      */
-    public function getFavorites() {
+    public function getFavorites($module = null) {
         $favoritesBean = \BeanFactory::getBean('Favorites');
-        return $favoritesBean->getCurrentUserSidebarFavorites();
+        return $favoritesBean->getCurrentUserSidebarFavorites(null, $module);
     }
 
 }

@@ -68,17 +68,30 @@ class Favorites extends Favorites_sugar
         return $db->getOne($query);
     }
 
-    public function getCurrentUserSidebarFavorites($id = null)
+    /**
+     * Get favorites list for the current user
+     *
+     * @access public
+     *
+     * @param string $id
+     * @param string $module
+     *
+     * @return array
+     */
+    public function getCurrentUserSidebarFavorites($id = null, $module = null)
     {
         global $db, $current_user;
 
         $return_array = array();
 
-        if($id){
-            $query = "SELECT parent_id, parent_type FROM favorites WHERE assigned_user_id = '" . $current_user->id . "' AND parent_id = '" . $id . "' AND deleted = 0 ORDER BY date_entered desc";
-        }else{
-            $query = "SELECT parent_id, parent_type FROM favorites WHERE assigned_user_id = '" . $current_user->id . "' AND deleted = 0 ORDER BY date_entered desc";
+        $query = "SELECT parent_id, parent_type FROM favorites WHERE assigned_user_id = '" . $current_user->id . "' AND deleted = 0";
+        if (!empty($id)) {
+            $query .= " AND parent_id = '" . $id . "'";
         }
+        if (!empty($module)) {
+            $query .= " AND parent_type = '" . $module . "'";
+        }
+        $query .= " ORDER BY date_entered DESC";
 
         $result = $db->query($query);
 
