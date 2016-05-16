@@ -555,21 +555,21 @@ class ModuleController extends Api
      */
     public function getFavorites(Request $req, Response $res, $args)
     {
-        global $container;
+        global $current_user;
 
         $result = null;
         $lib = new ModuleLib();
-        
-        if ($container['jwt'] !== null && $container['jwt']->userId !== null) {
-            $user = \BeanFactory::getBean('Users', $container['jwt']->userId);
+
+        if (is_null($current_user) || is_null($current_user->id)) {
+            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
+            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
+        } else {
+            $user = \BeanFactory::getBean('Users', $current_user->id);
             if ($user === false) {
                 $result = $this->generateResponse($res, 401, 'No user id', 'Failure');
             } else {
                 $result = $this->generateResponse($res, 200, $lib->getFavorites(), 'Success');
             }
-        } else {
-            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
-            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
         }
 
         return $result;
@@ -588,23 +588,23 @@ class ModuleController extends Api
      */
     public function getModuleFavorites(Request $req, Response $res, $args)
     {
-        global $container;
+        global $current_user;
 
         $result = null;
         $lib = new ModuleLib();
 
         $module = (empty($args['module'])) ? '' : $args['module'];
 
-        if ($container['jwt'] !== null && $container['jwt']->userId !== null) {
-            $user = \BeanFactory::getBean('Users', $container['jwt']->userId);
+        if (is_null($current_user) || is_null($current_user->id)) {
+            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
+            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
+        } else {
+            $user = \BeanFactory::getBean('Users', $current_user->id);
             if ($user === false) {
                 $result = $this->generateResponse($res, 401, 'No user id', 'Failure');
             } else {
                 $result = $this->generateResponse($res, 200, $lib->getFavorites($module), 'Success');
             }
-        } else {
-            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
-            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
         }
 
         return $result;
@@ -622,21 +622,21 @@ class ModuleController extends Api
      */
     public function getRecordsViewed(Request $req, Response $res, $args)
     {
-        global $container;
+        global $current_user;
 
         $result = null;
         $lib = new ModuleLib();
 
-        if ($container['jwt'] !== null && $container['jwt']->userId !== null) {
-            $user = \BeanFactory::getBean('Users', $container['jwt']->userId);
+        if (is_null($current_user) || is_null($current_user->id)) {
+            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
+            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
+        } else {
+            $user = \BeanFactory::getBean('Users', $current_user->id);
             if ($user === false) {
                 $result = $this->generateResponse($res, 401, 'No user id', 'Failure');
             } else {
-                $result = $this->generateResponse($res, 200, $lib->getLastViewed($container['jwt']->userId, ''), 'Success');
+                $result = $this->generateResponse($res, 200, $lib->getLastViewed($current_user->id, ''), 'Success');
             }
-        } else {
-            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
-            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
         }
 
         return $result;
@@ -656,25 +656,25 @@ class ModuleController extends Api
      */
     public function getModuleRecordsViewed(Request $req, Response $res, $args)
     {
-        global $container;
+        global $current_user;
 
         $result = null;
         $lib = new ModuleLib();
 
         $module = (empty($args['module'])) ? '' : $args['module'];
 
-        if ($container['jwt'] !== null && $container['jwt']->userId !== null) {
-            $user = \BeanFactory::getBean('Users', $container['jwt']->userId);
+        if (is_null($current_user) || is_null($current_user->id)) {
+            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
+            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
+        } else {
+            $user = \BeanFactory::getBean('Users', $current_user->id);
             if ($user === false) {
                 $result = $this->generateResponse($res, 401, 'No user id', 'Failure');
             } else {
-                $result = $this->generateResponse($res, 200, $lib->getLastViewed($container['jwt']->userId, $module), 'Success');
+                $result = $this->generateResponse($res, 200, $lib->getLastViewed($current_user->id, $module), 'Success');
             }
-        } else {
-            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but user not found');
-            $result =  $this->generateResponse($res, 401, 'No user id', 'Failure');
         }
-
+        
         return $result;
     }
 
