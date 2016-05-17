@@ -678,4 +678,42 @@ class ModuleController extends Api
         return $result;
     }
 
+    /**
+     * Get current user's last viewed URLs in the given module
+     *
+     * @access public
+     *
+     * @param Request  $req
+     * @param Response $res
+     * @param array $args
+     *
+     * @return Response
+     */
+    public function getModuleMenu(Request $req, Response $res, $args)
+    {
+        global $current_user, $app_list_strings;
+
+        $module = (empty($args['module'])) ? '' : $args['module'];
+
+        $result = null;
+
+        if (is_null($current_user) || is_null($current_user->id)) {
+            $GLOBALS['log']->warn(__FILE__ . ': ' . __FUNCTION__ . ' called but user not found');
+            $result = $this->generateResponse($res, 401, 'No user id', 'Failure');
+        } else if (empty($module)) {
+            $GLOBALS['log']->warn(__FILE__ . ': ' . __FUNCTION__ . ' called but module not found');
+            $result = $this->generateResponse($res, 400, 'No module', 'Failure');
+        } else {
+            $user = \BeanFactory::getBean('Users', $current_user->id);
+            if ($user === false) {
+                $result = $this->generateResponse($res, 401, 'No user id', 'Failure');
+            } else {
+                $lib = new ModuleLib();
+                $result = $this->generateResponse($res, 200, $lib->getModuleMenu($module), 'Success');
+            }
+        }
+
+        return $result;
+    }
+
 }

@@ -864,4 +864,33 @@ class ModuleLib
         return $favoritesBean->getCurrentUserSidebarFavorites(null, $module);
     }
 
+    /**
+     * Module's submenu
+     *
+     * @access public
+     *
+     * @param string $module
+     *
+     * @return array
+     */
+    public function getModuleMenu($module = null) {
+
+        global $current_user;
+
+        $module_menu = [];
+
+        $modules = query_module_access_list($current_user);
+
+        if (array_key_exists($module, $modules)) {
+
+            require_once 'include/MVC/View/SugarView.php';
+
+            $sugarView = new \SugarView();
+
+            $module_menu = $sugarView->getMenu($module);
+
+        }
+
+        return $module_menu;
+    }
 }
