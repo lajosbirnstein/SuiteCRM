@@ -661,6 +661,31 @@ class ModuleLib
     }
 
     /**
+     * @param $moduleName
+     * @param $moduleId
+     * @param $linkFieldName
+     * @param $relatedIds
+     * @param $nameValues
+     *
+     * @return array
+     */
+    public function updateRelationship($moduleName, $moduleId, $linkFieldName, $relatedIds, $nameValues)
+    {
+        $bean = \BeanFactory::getBean($moduleName, $moduleId);
+
+        if ($bean) {
+            $bean->load_relationship($linkFieldName);
+            
+            var_dump($bean); die;
+            
+        } else {
+
+        }
+
+        return [];
+    }
+
+    /**
      * @param $moduleNames
      * @param $moduleIds
      * @param $linkFieldNames
@@ -893,4 +918,39 @@ class ModuleLib
 
         return $module_menu;
     }
+    /**
+     * Get linked value(s)
+     *
+     * @access public
+     *
+     * @param string $module
+     * @param string $id
+     * @param string $link
+     * @param string $relatedId
+     *
+     * @return array
+     */    
+    public function getRelatedItem($module, $id, $link, $relatedId) {
+        $res = [];
+
+        $moduleBean = \BeanFactory::getBean($module, $id);
+
+        if ($moduleBean) {
+            $linkedArray = $moduleBean->get_linked_beans($link);
+            if (!empty($linkedArray)) {
+
+                $primaryFieldName = $linkedArray[0]->getPrimaryFieldDefinition()['name'];
+
+                foreach ($linkedArray as $item) {
+                    if ($item->$primaryFieldName === $relatedId) {
+                        foreach ($item->getFieldDefinitions() as $field => $data) {
+                            $res[$field] = $item->getFieldValue($field);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $res;
+    }    
 }

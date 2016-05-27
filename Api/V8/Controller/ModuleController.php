@@ -423,6 +423,32 @@ class ModuleController extends Api
      *
      * @return Response
      */
+    public function updateRelationship(Request $req, Response $res, $args)
+    {
+        $lib = new ModuleLib();
+        $data = $req->getParsedBody();
+
+        $moduleName = $data['module'];
+        $moduleId = $data['module_id'];
+        $linkFieldName = $data['link_field_name'];
+        $relatedIds = $data['related_ids'];
+        $nameValues = $data['name_value_list'];
+
+        if (empty($moduleName) || empty($moduleId) || empty($linkFieldName) || !is_array($relatedIds) || !is_array($nameValues) || empty($relatedIds) || empty($nameValues)) {
+            return $this->generateResponse($res, 400, 'Incorrect parameters', 'Failure');
+        } else {
+            return $this->generateResponse($res, 200,
+                $lib->updateRelationship($moduleName, $moduleId, $linkFieldName, $relatedIds, $nameValues), 'Success');
+        }
+    }
+
+    /**
+     * @param Request  $req
+     * @param Response $res
+     * @param $args
+     *
+     * @return Response
+     */
     public function createRelationships(Request $req, Response $res, $args)
     {
         $lib = new ModuleLib();
@@ -711,6 +737,48 @@ class ModuleController extends Api
                 $lib = new ModuleLib();
                 $result = $this->generateResponse($res, 200, $lib->getModuleMenu($module), 'Success');
             }
+        }
+
+        return $result;
+    }
+
+    /**
+     *
+     *
+     * @access public
+     *
+     * @param Request  $req
+     * @param Response $res
+     * @param array $args
+     *
+     * @return Response
+     */
+    public function getRelationship(Request $req, Response $res, $args)
+    {
+        global $current_user;
+
+        $module = (empty($args['module'])) ? '' : $args['module'];
+        $link = (empty($args['link'])) ? '' : $args['link'];
+        $id = (empty($args['id'])) ? '' : $args['id'];
+        $relatedId = (empty($args['related_id'])) ? '' : $args['related_id'];
+
+        $result = null;
+
+        if (empty($module) || empty($link) || empty($id) || empty($relatedId)) {
+            $GLOBALS['log']->warn(__FILE__.': '.__FUNCTION__.' called but with incorrect parameters');
+            $result = $this->generateResponse($res, 400, 'Incorrect parameters', 'Failure');
+        } else {
+
+            $user = \BeanFactory::getBean('Users', $current_user->id);
+
+            if ($user) {
+                $lib = new ModuleLib();
+                $result = $this->generateResponse($res, 200, $lib->getRelatedItem($module, $id, $link, $relatedId), 'Success');
+            } else {
+                $GLOBALS['log']->warn(__FILE__ . ': ' . __FUNCTION__ . ' called but user ID is invalid');
+                $result = $this->generateResponse($res, 401, 'Invalid user id', 'Failure');
+            }
+
         }
 
         return $result;
